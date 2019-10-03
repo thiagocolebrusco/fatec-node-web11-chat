@@ -10,6 +10,7 @@ app.set("jwt", jwt);
 app.set("mongoose", mongoose)
 app.use(express.json())
 app.use(express.urlencoded({ extended: false }))
+app.use('/uploads', express.static('uploads')); // Liberar acesso a pasta uploads
 
 mongoose.connect("mongodb://localhost:27017/nodejs-web11", { useNewUrlParser: true, useUnifiedTopology: true, useFindAndModify: false })
     .then(() => console.log("conexão realizada com o MongoDB"))
@@ -18,6 +19,7 @@ mongoose.connect("mongodb://localhost:27017/nodejs-web11", { useNewUrlParser: tr
 consign({ cwd: 'src' })
     .include("models")
     .then("middlewares")
+    .then("utils")
     .then("controllers")
     .then("routes")
     .into(app)
