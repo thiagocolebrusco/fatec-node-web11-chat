@@ -1,3 +1,4 @@
+const crypto = require('crypto')
 module.exports = function(app) {
 
     const usuariosModel = app.get("mongoose").model("Usuarios")
@@ -16,6 +17,7 @@ module.exports = function(app) {
         },
         adicionar: (req, res) => {
             let usuario = new usuariosModel(req.body)
+            usuario.senha = crypto.createHash("md5").update(usuario.senha).digest('hex')
             usuario.save((err) => {
                 if(err){
                     res.status(422).json(err)
@@ -48,6 +50,7 @@ module.exports = function(app) {
         login: (req, res) => {
             let email = req.body.email
             let senha = req.body.senha
+            senha = crypto.createHash("md5").update(senha).digest('hex')
 
             usuariosModel.findOne({ email: email }).then((usuario) => {
                 if(! usuario) {
