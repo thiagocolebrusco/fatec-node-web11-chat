@@ -1,30 +1,70 @@
 module.exports = function(app) {
 
+    const usuariosModel = app.get("mongoose").model("Usuarios")
     return {
         listar: function(req, res) {
-            res.json(app.db.usuarios)
+            usuariosModel.find({}).then((usuarios) => {
+                res.json(usuarios)
+            })
+            
         },
         consultarPorId: function(req, res) {
             let id = req.params.id
-            let usuario = app.db.usuarios.filter((item) => item.id == id)
-            res.json(usuario)
+            usuariosModel.findById(id).then((usuario) => {
+                res.json(usuario)
+            })
         },
         adicionar: (req, res) => {
-            let usuario = req.body
-            app.db.usuarios.push(usuario)
-            res.end("Adicionar usuário")
+            let usuario = new usuariosModel(req.body)
+            usuario.save((err) => {
+                if(err){
+                    res.status(422).json(err)
+                } else {
+                    res.sendStatus(200)
+                }
+            })
         },
         atualizar: (req, res) => {
             let id = req.params.id
             let usuario = req.body
-            let index = app.db.usuarios.findIndex((item) => item.id == id)
-            app.db.usuarios[index] = usuario
-            res.end("Usuário atualizado com sucesso!")
+            usuariosModel.findByIdAndUpdate(id, usuario, (err) => {
+                if(err){
+                    res.status(422).json(err)
+                } else {
+                    res.status(200).end()
+                }
+            })
         },
         excluir: (req, res) => {
             let id = req.params.id
-            app.db.usuarios = app.db.usuarios.filter((item) => item.id != id)
-            res.end("Usuário excluido com sucesso!")
+            usuariosModel.findByIdAndDelete(id, (err) => {
+                if(err) {
+                    res.status(422).json(err)
+                } else {
+                    res.sendStatus(200)
+                }
+            })
+        },
+        login: (req, res) => {
+            let email = req.body.email
+            let senha = req.body.senha
+
+            usuariosModel.findOne({ email: email }).then((usuario) => {
+                if(! usuario) {
+                    res.status(422).end("Email não cadastrado")
+                } else if(usuario.senha != senha) {
+                    res.status(422).end("Senha inválida")
+                } else {
+                    let jwt = app.get("jwt")
+                    let token = jwt.sign({ email }, "senhasecretafatec", {
+                        expiresIn: 60*60*24 // expires in 24 hours
+                    });
+                    res.json({
+                        token,
+                        usuario
+                    })
+                }
+            })
         }
     }
 }

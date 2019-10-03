@@ -1,7 +1,6 @@
-const mongoose = require("mongoose")
 module.exports = function(app) {
 
-    produtosModel = mongoose.model("Produtos")
+    produtosModel = app.get("mongoose").model("Produtos")
 
     return {
         listar: function(req, res) {

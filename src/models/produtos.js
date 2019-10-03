@@ -1,6 +1,7 @@
-var mongoose = require('mongoose');
-var ProdutosSchema = mongoose.Schema({
-    nome: String,
-    valor: Number,
-})
-mongoose.model('Produtos', ProdutosSchema);
+module.exports = (app) => {
+    var ProdutosSchema = app.get("mongoose").Schema({
+        nome: String,
+        valor: Number,
+    })
+    app.get("mongoose").model('Produtos', ProdutosSchema);
+}
