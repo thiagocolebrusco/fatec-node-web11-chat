@@ -59,7 +59,7 @@ module.exports = function(app) {
                     res.status(422).end("Senha inválida")
                 } else {
                     let jwt = app.get("jwt")
-                    let token = jwt.sign({ email }, "senhasecretafatec", {
+                    let token = jwt.sign({ email }, process.env.JWT_SECRET, {
                         expiresIn: 60*60*24 // expires in 24 hours
                     });
                     res.json({

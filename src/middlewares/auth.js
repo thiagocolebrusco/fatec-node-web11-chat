@@ -6,12 +6,11 @@ module.exports = (app) => {
             if(req.originalUrl == "/usuarios/login"){
                 next();
             } else if(token) {
-                app.get("jwt").verify(token, "senhasecretafatec", (err, decoded) => {
+                app.get("jwt").verify(token, process.env.JWT_SECRET, (err, decoded) => {
                     if(err){
                         return res.sendStatus(401)
                     } else {
                         req.decoded = decoded;
-                        console.log(decoded)
                         next();
                     }
                 })

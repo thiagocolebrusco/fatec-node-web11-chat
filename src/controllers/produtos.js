@@ -6,6 +6,8 @@ module.exports = function(app) {
         listar: function(req, res) {
             produtosModel.find({}).then((produtos) => {
                 res.json(produtos);
+            }).catch((err) => {
+                res.sendStatus(500);
             })
         },
         consultarPorId: function(req, res) {
